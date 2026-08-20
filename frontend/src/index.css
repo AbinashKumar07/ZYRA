@@ -1,0 +1,299 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=Manrope:wght@300;400;500;600;700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   DARK THEME (Black & Purple)
+   ============================================ */
+:root,
+:root[data-theme="dark"] {
+    --z-bg: #050505;
+    --z-bg-2: #0b0b0f;
+    --z-card: #111116;
+    --z-card-2: #17171d;
+    --z-text: #ffffff;
+    --z-text-2: #a7a7b0;
+    --z-text-3: #73737d;
+    --z-purple: #7c3aed;
+    --z-purple-bright: #9333ea;
+    --z-purple-soft: #a78bfa;
+    --z-border: rgba(255, 255, 255, 0.08);
+    --z-input-bg: #0b0b0f;
+    --z-shadow-btn: 0 8px 30px -10px rgba(124, 58, 237, 0.8);
+    --z-shadow-btn-hover: 0 12px 40px -8px rgba(147, 51, 234, 0.9);
+    --z-focus-ring: rgba(124, 58, 237, 0.2);
+    --z-glow-color: rgba(124, 58, 237, 0.35);
+    --z-skel-1: #111116;
+    --z-skel-2: #1b1b22;
+    --z-selection-text: #fff;
+}
+
+/* ============================================
+   LIGHT THEME (White & Gold)
+   ============================================ */
+:root[data-theme="light"] {
+    --z-bg: #ffffff;
+    --z-bg-2: #faf8f3;
+    --z-card: #ffffff;
+    --z-card-2: #fdf9ef;
+    --z-text: #171412;
+    --z-text-2: #5f5850;
+    --z-text-3: #948c80;
+    --z-purple: #b8860b;         /* Base Gold */
+    --z-purple-bright: #d4a017;  /* Hover Gold */
+    --z-purple-soft: #e6c34a;    /* Soft Accent Gold */
+    --z-border: rgba(23, 20, 18, 0.1);
+    --z-input-bg: #ffffff;
+    --z-shadow-btn: 0 8px 30px -10px rgba(184, 134, 11, 0.45);
+    --z-shadow-btn-hover: 0 12px 40px -8px rgba(212, 160, 23, 0.55);
+    --z-focus-ring: rgba(184, 134, 11, 0.25);
+    --z-glow-color: rgba(212, 160, 23, 0.25);
+    --z-skel-1: #f3ede0;
+    --z-skel-2: #ece2cc;
+    --z-selection-text: #171412;
+}
+
+@layer base {
+    :root,
+    :root[data-theme="dark"] {
+        --background: 0 0% 2%;
+        --foreground: 0 0% 100%;
+        --card: 240 10% 7%;
+        --card-foreground: 0 0% 100%;
+        --popover: 240 10% 7%;
+        --popover-foreground: 0 0% 100%;
+        --primary: 263 70% 58%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 240 8% 11%;
+        --secondary-foreground: 0 0% 100%;
+        --muted: 240 8% 11%;
+        --muted-foreground: 240 5% 68%;
+        --accent: 263 70% 58%;
+        --accent-foreground: 0 0% 100%;
+        --destructive: 0 72% 51%;
+        --destructive-foreground: 0 0% 100%;
+        --border: 240 6% 16%;
+        --input: 240 6% 16%;
+        --ring: 263 70% 58%;
+        --radius: 0.75rem;
+    }
+
+    :root[data-theme="light"] {
+        --background: 40 33% 99%;
+        --foreground: 20 14% 8%;
+        --card: 0 0% 100%;
+        --card-foreground: 20 14% 8%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 20 14% 8%;
+        --primary: 42 78% 39%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 42 40% 95%;
+        --secondary-foreground: 20 14% 8%;
+        --muted: 42 30% 94%;
+        --muted-foreground: 30 8% 40%;
+        --accent: 42 78% 39%;
+        --accent-foreground: 0 0% 100%;
+        --destructive: 0 72% 51%;
+        --destructive-foreground: 0 0% 100%;
+        --border: 40 20% 88%;
+        --input: 40 20% 88%;
+        --ring: 42 78% 39%;
+        --radius: 0.75rem;
+    }
+}
+
+* {
+    border-color: var(--z-border);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: var(--z-bg);
+    color: var(--z-text);
+    font-family: "Manrope", ui-sans-serif, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+
+::selection {
+    background: var(--z-purple);
+    color: var(--z-selection-text);
+}
+
+.font-display {
+    font-family: "Bricolage Grotesque", "Manrope", sans-serif;
+    letter-spacing: -0.02em;
+}
+
+.z-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--z-purple-soft);
+}
+
+.z-card {
+    background: var(--z-card);
+    border: 1px solid var(--z-border);
+    transition:
+        border-color 0.35s ease,
+        transform 0.35s ease,
+        background-color 0.35s ease;
+}
+.z-card:hover {
+    border-color: rgba(167, 139, 250, 0.35);
+    background: var(--z-card-2);
+    transform: translateY(-4px);
+}
+:root[data-theme="light"] .z-card:hover {
+    border-color: rgba(212, 160, 23, 0.45);
+}
+
+.z-glow {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(120px);
+    pointer-events: none;
+    background: radial-gradient(
+        circle,
+        var(--z-glow-color),
+        transparent 70%
+    );
+}
+
+.z-grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@layer components {
+    .z-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border-radius: 9999px;
+        padding: 0.8rem 1.6rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+    }
+    .z-btn:active {
+        transform: scale(0.97);
+    }
+    .z-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    .z-btn-primary {
+        background: var(--z-purple);
+        color: #fff;
+        box-shadow: var(--z-shadow-btn);
+    }
+    .z-btn-primary:hover:not(:disabled) {
+        background: var(--z-purple-bright);
+        box-shadow: var(--z-shadow-btn-hover);
+    }
+    :root[data-theme="light"] .z-btn-primary {
+        color: #ffffff;
+    }
+    .z-btn-ghost {
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: var(--z-text);
+    }
+    :root[data-theme="light"] .z-btn-ghost {
+        border: 1px solid rgba(23, 20, 18, 0.18);
+    }
+    .z-btn-ghost:hover:not(:disabled) {
+        border-color: var(--z-purple-soft);
+        color: var(--z-purple);
+    }
+}
+
+.z-input {
+    width: 100%;
+    background: var(--z-input-bg);
+    border: 1px solid var(--z-border);
+    border-radius: 0.6rem;
+    padding: 0.75rem 0.9rem;
+    color: var(--z-text);
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+.z-input::placeholder {
+    color: var(--z-text-3);
+}
+.z-input:focus {
+    outline: none;
+    border-color: var(--z-purple);
+    box-shadow: 0 0 0 3px var(--z-focus-ring);
+}
+
+:focus-visible {
+    outline: 2px solid var(--z-purple-soft);
+    outline-offset: 2px;
+}
+
+.z-scroll-x {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.z-scroll-x::-webkit-scrollbar {
+    display: none;
+}
+.z-scroll-x > * {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+}
+
+.z-skel {
+    background: linear-gradient(90deg, var(--z-skel-1), var(--z-skel-2), var(--z-skel-1));
+    background-size: 200% 100%;
+    animation: zshimmer 1.4s linear infinite;
+}
+@keyframes zshimmer {
+    to { background-position: -200% 0; }
+}
+
+.z-reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    animation: zreveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes zreveal {
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+    }
+    .z-reveal {
+        opacity: 1;
+        transform: none;
+    }
+    html {
+        scroll-behavior: auto;
+    }
+}

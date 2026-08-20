@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#050505"/>
+  <circle cx="120" cy="560" r="300" fill="#7C3AED" opacity="0.22"/>
+  <circle cx="1080" cy="90" r="240" fill="#9333EA" opacity="0.16"/>
+  <text x="90" y="300" font-family="Helvetica,Arial,sans-serif" font-size="120" font-weight="800" letter-spacing="24" fill="#FFFFFF">ZYR<tspan fill="#A78BFA">A</tspan></text>
+  <text x="94" y="372" font-family="Helvetica,Arial,sans-serif" font-size="40" font-weight="700" letter-spacing="8" fill="#A7A7B0">LOOK YOUR BEST. TODAY.</text>
+  <text x="96" y="440" font-family="Helvetica,Arial,sans-serif" font-size="24" letter-spacing="4" fill="#73737D">PREPARING FOR LAUNCH — DELHI • GURUGRAM • NOIDA</text>
+</svg>

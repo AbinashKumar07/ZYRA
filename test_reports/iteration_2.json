@@ -1,0 +1,42 @@
+{
+  "summary": "Iteration-2 regression + new-feature test of ZYRA. Backend pytest (new suite test_zyra_iteration2.py): 21/21 passing covering RBAC across admin/editor/viewer/tailor, tailor isolation, lead persistence + no-recipient-in-payload guarantee, CMS create/publish/reorder/bulk-import/delete, editor-can-write-viewer-cannot, tailoring options/slots, booking happy path returning ZT- reference + estimate range, 409 when no partner is free, tailor accept flow with 409 on second accept, tailor availability toggle, and admin pricing edit flowing into /api/tailoring/options. Iteration-1 suite (test_zyra_backend.py) still passes. Frontend Playwright: public booking wizard end-to-end submits and shows 'Request sent — not confirmed yet' with a ZT-XXXXXX reference; admin dashboard shows all 5 views (admin-view-leads/content/bookings/tailors/team) for admin, editor does NOT see admin-view-team; CMS create->publish->delete works via cms-new/cms-field-*/cms-save/cms-status-*/cms-delete-*; tailor signing in at /admin is told to use /tailor and provided a link; /tailor console renders tailor-pending, tailor-confirmed and tailor-availability with avail-* slot toggles; Founder page shows 2 'Read Preview' buttons, opens a modal and closes; /book returns 404 (no separate route). Email alerts to configured LEAD_ALERT_RECIPIENTS are confirmed sent in backend log ('Lead alert sent to abinash.kumar231113@gmail.com' — 3 lines).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/tailoring/bookings (booking confirmation email to customer)", "issue": "send_booking_alert loops through [customer_email, ...LEAD_ALERT_RECIPIENTS]. The Emergent email integration only accepts whitelisted recipients, so every attempt to email the customer returns HTTP 422 ('422 unknown') and is logged as ERROR in backend.err.log. The internal recipient in LEAD_ALERT_RECIPIENTS still receives the mail, and the API response is not affected (fire_and_forget), but the customer will not receive the promised acknowledgement email. Consider suppressing the customer send when the integration is in whitelist-only mode, or logging INFO only for whitelisted recipients."},
+      {"endpoint": "email_service.send_booking_alert", "issue": "There is a logger.info('Lead alert sent to ...') for successful lead sends but no equivalent logger.info for successful booking sends, making it hard to verify booking alerts from logs. Add a matching info log."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_zyra_iteration2.py",
+    "/app/backend/tests/test_zyra_backend.py",
+    "/app/test_reports/pytest/iteration2_results.xml"
+  ],
+  "action_items": [
+    "Consider skipping (or short-circuiting) the customer email in send_booking_alert when the Emergent email integration is running in whitelist-only mode, since it will always 422. Alternatively, catch 422 silently instead of logging ERROR.",
+    "Add a logger.info('Booking alert sent to %s', address) on success in email_service.send_booking_alert to mirror lead alerts.",
+    "Optional (carried from iteration 1): rate_limit._hits / login lockout are per-process in-memory — good enough for a preview but not for production behind multiple workers."
+  ],
+  "critical_code_review_comments": [
+    "routes_public.py: request_booking uses `band = await db.pricing.find_one({garment,service})` as a fallback when the city band is missing. The fallback is not city-scoped so it can pick any city's band. Safer to fall back to a canonical Delhi row or return 422.",
+    "routes_tailor.py respond(accept): looks up tailor doc via `ObjectId.is_valid(str(tailor_id))` then uses `(tailor or {}).get('name', principal.get('name'))` — if the tailor record is missing, the booking is confirmed with the tailor user's login name which may not match the partner brand. Consider failing fast (500 or 409) if the tailor row is gone.",
+    "auth.authorize: for 'bookings:respond', if resource.tailor_id is set but does not equal principal.tailor_id, it returns NOT_VISIBLE which maps to 404. Good. However respond() does not audit denials — only allowed accepts/declines are audited. Consider auditing forbidden attempts too.",
+    "email_service.send_booking_alert: iterates target list serially and does not de-duplicate. If LEAD_ALERT_RECIPIENTS contains the customer email, they'll receive the same mail twice.",
+    "routes_admin.py update_content applies changes without any allow-list on `data` (arbitrary dict). Fine for internal-only writes but be aware there's no schema validation per content type."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_zyra_iteration2.py"
+  ],
+  "success_rate": {"backend": "100% (21/21 new + 16/16 iteration-1)", "frontend": "100% of tested flows"},
+  "test_credentials": "admin@zyra.app/ZyraAdmin2026, editor@zyra.app/ZyraEditor2026, viewer@zyra.app/ZyraViewer2026, tailor@zyra.app/ZyraTailor2026 (matches /app/memory/test_credentials.md)",
+  "seed_data_creation": "Several TEST_ prefixed leads, ~3 TEST_ bookings (one confirmed by tailor@zyra.app via /api/tailor/bookings/{id}/respond), a couple of TEST_ FAQ items created/deleted, one bulk-import FAQ item left in place, and one pricing edit to Kurta Set / Custom Stitching / Delhi (7777 - 17777) via /api/admin/pricing. Reset pricing manually via admin UI if the seeded band is needed back (was 6000 - 16000).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Two pytest suites live in /app/backend/tests: test_zyra_backend.py (iteration 1) and test_zyra_iteration2.py (this run). Run both with `pytest /app/backend/tests -v --tb=short`. Admin dashboard tab testids are admin-view-{leads|content|bookings|tailors|team} (not admin-nav-*). The booking wizard has 5 steps (garment / service / date+slot / measurements / your details), each needing its own booking-next click before the final booking-submit on step 5. Tailor console lives at /tailor (separate from /admin) — signing in as tailor@zyra.app at /admin only shows a 'Go to Tailor Console' redirect card. Kurta Set / Custom Stitching / Delhi pricing was rewritten by a test — restore via admin UI if a demo needs the original 6000-16000 band.",
+  "rca of the issue": "Booking confirmation email to customer always fails with 422 because the Emergent email integration only accepts recipients on its allow-list, and customer emails are arbitrary. Reproduce: POST /api/tailoring/bookings with any customer email → check /var/log/supervisor/backend.err.log for 'Booking alert to <email> failed: Client error 422 unknown'. Mitigation: in email_service.send_booking_alert, either drop the customer from targets, or wrap the per-recipient send in a try/except that treats 422 from the integration as a soft failure (log INFO instead of ERROR)."
+}
